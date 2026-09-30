@@ -1,10 +1,12 @@
+import './style.css';
+
 const form = document.querySelector('form');
 const list = document.querySelector('#notes');
-const heading = document.querySelector('h1');
+const count = document.querySelector('#count');
 
 async function load() {
   const notes = await (await fetch('/api/notes')).json();
-  heading.textContent = `Notes (${notes.filter((note) => !note.isDone).length} open)`;
+  count.textContent = `(${notes.filter((note) => !note.isDone).length} open)`;
   list.replaceChildren(...notes.map((note) => {
     const box = Object.assign(document.createElement('input'), { type: 'checkbox', checked: note.isDone });
     box.addEventListener('change', async () => {
@@ -17,8 +19,11 @@ async function load() {
     });
     const text = document.createElement(note.isDone ? 's' : 'span');
     text.textContent = note.text;
+    const label = document.createElement('label');
+    label.append(box, text);
     const item = document.createElement('li');
-    item.append(box, ' ', text);
+    item.className = note.isDone ? 'done' : '';
+    item.append(label);
     return item;
   }));
 }

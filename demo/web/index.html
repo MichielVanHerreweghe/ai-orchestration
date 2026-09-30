@@ -6,12 +6,14 @@
     <title>Notes</title>
   </head>
   <body>
-    <h1>Notes (0 open)</h1>
-    <form>
-      <input name="text" required placeholder="Write a note" />
-      <button>Add</button>
-    </form>
-    <ul id="notes"></ul>
+    <main>
+      <h1>Notes <span id="count">(0 open)</span></h1>
+      <form>
+        <input name="text" required placeholder="Write a note" aria-label="Note text" />
+        <button>Add</button>
+      </form>
+      <ul id="notes"></ul>
+    </main>
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>
