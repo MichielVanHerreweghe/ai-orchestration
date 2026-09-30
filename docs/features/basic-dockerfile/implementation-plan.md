@@ -5,7 +5,7 @@ branch:     feat/basic-dockerfile
 worktree:   /workspace/feat/basic-dockerfile
 convention: docs/features/<slug>/     # no prior docs; default Shape A
 language:   en
-approved:   false
+approved:   true
 database:   null
 seeded:     false
 pr:         null
@@ -15,7 +15,7 @@ artifacts:
 milestones:
   - id: 1
     title: Dockerfile serving a test HTTP server
-    status: pending
+    status: in_progress
     commit: null
 ---
 
