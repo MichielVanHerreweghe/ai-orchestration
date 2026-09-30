@@ -1,7 +1,7 @@
 # Handover: Basic Dockerfile
 
 ## What changed
-- **Repo root**: new `Dockerfile` (`python:3-alpine`, writes `index.html` containing `ok` into `/srv`, exposes 8000, runs `python -m http.server 8000`).
+- **Repo root**: PLANNED, to be rewritten after re-implementation: Go server in `main.go` plus a multi-stage `Dockerfile`.
 - No API, frontend, database or config changes.
 
 ## Test flows

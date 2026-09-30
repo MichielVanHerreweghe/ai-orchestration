@@ -1,7 +1,7 @@
 # Basic Dockerfile
 
 ## Summary
-A `Dockerfile` at the repo root that builds an image running a small test HTTP server, so the container setup can be exercised end to end.
+A `Dockerfile` at the repo root that builds an image running a small test HTTP server written in Go, so the container setup can be exercised end to end.
 
 ## Actors
 | Actor | Role |
