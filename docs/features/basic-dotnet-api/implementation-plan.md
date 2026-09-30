@@ -5,7 +5,7 @@ branch:     feat/basic-dotnet-api
 worktree:   /workspace/feat/basic-dotnet-api
 convention: docs/features/<slug>/     # no docs on main; default Shape A
 language:   en
-approved:   false
+approved:   true
 database:   null
 seeded:     false
 pr:         null
@@ -15,7 +15,7 @@ artifacts:
 milestones:
   - id: 1
     title: Hello API with Dockerfile
-    status: todo
+    status: in_progress
     commit: null
 ---
 
