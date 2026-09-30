@@ -23,12 +23,20 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-app.MapGet("/api/notes", (NotesDb db) => db.Notes.OrderByDescending(note => note.Id).ToListAsync());
+app.MapGet("/api/notes", (NotesDb db) => db.Notes.OrderBy(note => note.IsDone).ThenByDescending(note => note.Id).ToListAsync());
 app.MapPost("/api/notes", async (Note note, NotesDb db) =>
 {
     db.Notes.Add(note);
     await db.SaveChangesAsync();
     return Results.Created($"/api/notes/{note.Id}", note);
+});
+app.MapPatch("/api/notes/{id}", async (int id, NoteDone body, NotesDb db) =>
+{
+    var note = await db.Notes.FindAsync(id);
+    if (note is null) return Results.NotFound();
+    note.IsDone = body.IsDone;
+    await db.SaveChangesAsync();
+    return Results.Ok(note);
 });
 
 app.Run();
@@ -43,4 +51,8 @@ public sealed class Note
     public int Id { get; set; }
 
     public string Text { get; set; } = "";
+
+    public bool IsDone { get; set; }
 }
+
+public sealed record NoteDone(bool IsDone);
