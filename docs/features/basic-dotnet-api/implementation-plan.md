@@ -15,8 +15,8 @@ artifacts:
 milestones:
   - id: 1
     title: Hello API with Dockerfile
-    status: in_progress
-    commit: null
+    status: done
+    commit: a803a9e
 ---
 
 # Implementation plan: Basic .NET API in a Docker container
