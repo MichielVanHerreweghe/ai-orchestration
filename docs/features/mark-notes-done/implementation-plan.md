@@ -23,8 +23,8 @@ milestones:
     commit: dae39f7
   - id: 3
     title: Modern look for the web page
-    status: todo
-    commit: null
+    status: done
+    commit: 846452b
 ---
 
 # Implementation plan: Mark notes as done
