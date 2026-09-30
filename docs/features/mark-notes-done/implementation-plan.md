@@ -15,12 +15,12 @@ artifacts:
 milestones:
   - id: 1
     title: API stores and returns done state
-    status: todo
-    commit: null
+    status: done
+    commit: 92357db
   - id: 2
     title: Checkbox, strike-through and open count in the web page
-    status: todo
-    commit: null
+    status: done
+    commit: dae39f7
 ---
 
 # Implementation plan: Mark notes as done
