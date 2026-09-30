@@ -1,0 +1,26 @@
+# Comments a preview's URL on its pull request once it's up. Argo CD's GitHub service only takes a GitHub App, so
+# this calls the GitHub API as a webhook, with the token in argocd-notifications-secret under github-token.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-notifications-cm
+data:
+  service.webhook.github: |
+    url: https://api.github.com
+    headers:
+      - name: Authorization
+        value: Bearer $github-token
+      - name: Accept
+        value: application/vnd.github+json
+  # Once per commit: when that commit is synced and everything in the preview is healthy.
+  trigger.on-preview-ready: |
+    - when: app.status.operationState != nil and app.status.operationState.phase in ['Succeeded'] and app.status.health.status == 'Healthy'
+      oncePer: app.status.sync.revision
+      send: [preview-ready]
+  template.preview-ready: |
+    webhook:
+      github:
+        method: POST
+        path: /repos/{{index .app.metadata.annotations "preview.axxit.be/repository"}}/issues/{{index .app.metadata.annotations "preview.axxit.be/pull-request"}}/comments
+        body: |
+          {"body": "**Preview:** http://web.{{.app.spec.destination.namespace}}.svc.cluster.local\n\nShows commit `{{.app.status.sync.revision}}`."}

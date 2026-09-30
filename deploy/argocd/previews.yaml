@@ -1,0 +1,50 @@
+# One Argo CD Application per pull request labelled preview: preview/ at its head commit, with the images
+# .github/workflows/preview.yml built for that commit, in a namespace of its own. Closing the pull request (or removing
+# the label) deletes the Application, and its finalizer deletes everything it deployed, namespace included.
+# Another repository gets previews with its own copy of this, and of the workflow.
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: ai-orchestration-previews
+  namespace: argocd
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+    - pullRequest:
+        github:
+          owner: MichielVanHerreweghe
+          repo: ai-orchestration
+          tokenRef:
+            secretName: github-token
+            key: token
+          # Only people with write access can label a pull request, so a fork's can't deploy itself.
+          labels: [preview]
+        requeueAfterSeconds: 60
+  template:
+    metadata:
+      name: ai-orchestration-pr-{{.number}}
+      annotations:
+        preview.axxit.be/repository: MichielVanHerreweghe/ai-orchestration
+        preview.axxit.be/pull-request: "{{.number}}"
+        notifications.argoproj.io/subscribe.on-preview-ready.github: ""
+      finalizers:
+        - resources-finalizer.argocd.argoproj.io
+    spec:
+      project: default
+      source:
+        repoURL: https://github.com/MichielVanHerreweghe/ai-orchestration.git
+        targetRevision: "{{.head_sha}}"
+        path: preview
+        kustomize:
+          namespace: preview-ai-orchestration-pr-{{.number}}
+          images:
+            - api=ghcr.io/michielvanherreweghe/ai-orchestration/api:{{.head_sha}}
+            - web=ghcr.io/michielvanherreweghe/ai-orchestration/web:{{.head_sha}}
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: preview-ai-orchestration-pr-{{.number}}
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true

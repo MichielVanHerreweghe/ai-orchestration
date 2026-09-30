@@ -1,0 +1,9 @@
+# Argo CD, which deploys pull request previews. Apply with:
+#   kubectl apply --server-side --force-conflicts -k deploy/argocd
+# then deploy/argocd/previews.yaml, once its CRDs exist.
+namespace: argocd
+resources:
+  - namespace.yaml
+  - https://raw.githubusercontent.com/argoproj/argo-cd/v3.5.3/manifests/install.yaml
+patches:
+  - path: notifications.yaml

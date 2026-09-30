@@ -1,0 +1,47 @@
+# A throwaway database per preview, gone with the preview's namespace.
+apiVersion: v1
+kind: Secret
+metadata:
+  name: sql
+stringData:
+  password: Preview-only-Passw0rd
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sql
+spec:
+  selector:
+    matchLabels:
+      app: sql
+  template:
+    metadata:
+      labels:
+        app: sql
+    spec:
+      containers:
+        - name: sql
+          image: mcr.microsoft.com/mssql/server:2022-latest
+          env:
+            - name: ACCEPT_EULA
+              value: "Y"
+            - name: MSSQL_SA_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: sql
+                  key: password
+          ports:
+            - containerPort: 1433
+          resources:
+            requests:
+              memory: 2Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sql
+spec:
+  selector:
+    app: sql
+  ports:
+    - port: 1433

@@ -1,0 +1,8 @@
+# A pull request's preview. Argo CD's preview ApplicationSet (deploy/argocd/previews.yaml) applies this at the pull
+# request's head commit, in a namespace of its own, with the images .github/workflows/preview.yml built for it.
+# The Service named web is its URL.
+resources:
+  - namespace.yaml
+  - sql.yaml
+  - api.yaml
+  - web.yaml

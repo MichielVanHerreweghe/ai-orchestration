@@ -1,0 +1,5 @@
+# Renamed to each preview's own namespace, so closing its pull request deletes the whole preview, data included.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: preview
