@@ -5,7 +5,7 @@ branch:     feat/mark-notes-done
 worktree:   /workspace/feat/mark-notes-done
 convention: docs/features/<slug>/
 language:   en
-approved:   false
+approved:   true
 database:   Notes
 seeded:     false
 pr:         null
