@@ -21,6 +21,10 @@ milestones:
     title: Checkbox, strike-through and open count in the web page
     status: done
     commit: dae39f7
+  - id: 3
+    title: Modern look for the web page
+    status: todo
+    commit: null
 ---
 
 # Implementation plan: Mark notes as done
@@ -50,6 +54,7 @@ Follow the existing shape: minimal API endpoints in `Program.cs`, plain DOM code
 
 - **API**: add `bool IsDone` to `Note`. `GET /api/notes` orders by `IsDone` then `Id` descending, so open notes come first and done ones last, and the server owns the ordering. Add `PATCH /api/notes/{id}` taking `{ "isDone": bool }`, returning the note or 404.
 - **Web**: render each `<li>` with a checkbox (`checked = note.isDone`) and the text; done notes get a strike-through via `<s>` or `text-decoration`. On change, PATCH and call `load()` (same pattern as the form submit). The heading is set from the count of `!isDone` notes: `Notes (N open)`. The static `<h1>` gets an id so `load()` can set its text.
+- **Look (added after feedback)**: one new plain stylesheet `demo/web/src/style.css`, imported from `main.js` so Vite bundles it. No CSS framework, icon set or web font (no new dependency, no external request from the container). Centred card on a soft background, system font stack, rounded inputs with a visible focus ring, an accent-coloured Add button, list rows as cards with a subtle border and hover state, native checkbox styled with `accent-color`, done rows muted plus struck through, an open-count "pill" in the heading, and a `prefers-color-scheme: dark` variant via CSS variables. Layout stays usable at phone width. `main.js` only gains class names and wraps checkbox and text in a `<label>` so the whole row is the click target.
 - **Storage**: the `IsDone` column comes from `EnsureCreated`, defaulting to false.
 
 ## Alternatives rejected
@@ -70,6 +75,11 @@ Follow the existing shape: minimal API endpoints in `Program.cs`, plain DOM code
 - **Acceptance**: each note shows a checkbox; ticking/unticking PATCHes and refreshes the list; done notes are struck through and last; the heading reads `Notes (N open)` and updates on add, tick and untick, and after reload it reflects stored state. `npm run build` in `demo/web` is green.
 - **Tests**: walk the three acceptance scenarios from the issue by hand (see the use case).
 
+### 3. Modern look for the web page
+- **Files**: `demo/web/src/style.css` (new), `demo/web/src/main.js` (class names, `<label>` wrapper, stylesheet import), `demo/web/index.html` (heading markup for the count pill, class names)
+- **Acceptance**: the page shows the centred card layout, styled form and note rows described in Approach, in both light and dark colour schemes and at 360px width. Done notes are muted and struck through. Text/background contrast is at least WCAG AA, and the checkbox and input show a visible keyboard focus state. Behaviour from milestones 1 and 2 is unchanged, and the heading text still reads `Notes (N open)` (the pill may wrap the number, but the accessible text stays the same). `npm run build` in `demo/web` is green.
+- **Tests**: no automated tests. If a browser is available, screenshot light, dark and narrow widths and attach them to the PR; otherwise say the styling is unverified visually.
+
 ## Risks
 - **`EnsureCreated` won't add the column to an existing database.** A long-lived local database created before this change makes `GET /api/notes` fail with an invalid column error. Signal: 500 on the notes list after upgrading. Fix for local use: drop the `Notes` database. Previews are unaffected (fresh database each time).
 - **Cannot run SQL Server or Docker here**, so the end-to-end flow is unverified in this environment; the preview environment on the pull request is where it gets exercised.
@@ -78,8 +88,9 @@ Follow the existing shape: minimal API endpoints in `Program.cs`, plain DOM code
 Assumptions made without asking:
 - Route shape is `PATCH /api/notes/{id}` with `{ "isDone": bool }`.
 - Within each group, notes stay newest first.
+- "Modern" is read as a clean card layout, system fonts, soft colours and dark-mode support; no brand colours were given, so an indigo accent is used and is one CSS variable to change.
 - No schema migration story is added (see Risks); dropping a stale local database is acceptable for this demo.
 
 ## Out of scope
-- Editing or deleting notes, bulk "clear done", filtering, keyboard accessibility beyond a native checkbox.
+- Editing or deleting notes, bulk "clear done", filtering, animations, a theme toggle (dark follows the OS setting), keyboard accessibility beyond a native checkbox with a visible focus style.
 - EF migrations, automated tests, changes to `preview/` or `deploy/`.
