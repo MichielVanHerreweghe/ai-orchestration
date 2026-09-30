@@ -1,0 +1,90 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: agentruns.orchestrator.axxit.be
+spec:
+  conversion:
+    strategy: None
+  group: orchestrator.axxit.be
+  names:
+    kind: AgentRun
+    listKind: AgentRunList
+    plural: agentruns
+    singular: agentrun
+  scope: Namespaced
+  versions:
+  - additionalPrinterColumns:
+    - jsonPath: .spec.repository
+      name: Repository
+      priority: 0
+      type: string
+    - jsonPath: .spec.issue
+      name: Issue
+      priority: 0
+      type: integer
+    - jsonPath: .spec.command
+      name: Command
+      priority: 0
+      type: string
+    - jsonPath: .status.phase
+      name: Phase
+      priority: 0
+      type: string
+    - jsonPath: .status.costUsd
+      name: Cost
+      priority: 0
+      type: number
+    - jsonPath: .status.turns
+      name: Turns
+      priority: 0
+      type: integer
+    - jsonPath: .metadata.creationTimestamp
+      name: Age
+      priority: 0
+      type: date
+    name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        properties:
+          spec:
+            properties:
+              command:
+                type: string
+              issue:
+                format: int32
+                type: integer
+              prompt:
+                type: string
+              repository:
+                type: string
+            type: object
+          status:
+            properties:
+              costUsd:
+                format: double
+                nullable: true
+                type: number
+              finishedAt:
+                format: date-time
+                nullable: true
+                type: string
+              message:
+                nullable: true
+                type: string
+              phase:
+                nullable: true
+                type: string
+              startedAt:
+                format: date-time
+                nullable: true
+                type: string
+              turns:
+                format: int32
+                nullable: true
+                type: integer
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}

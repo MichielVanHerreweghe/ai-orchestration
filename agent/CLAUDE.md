@@ -1,0 +1,11 @@
+# Running environment
+
+You run unattended in a container, started by an orchestrator from a GitHub webhook.
+
+- **Nobody can answer you.** Never stop to ask. Where a skill says to stop and ask, make the most sensible call, record it under Open questions as a stated assumption, and continue.
+- **No artifact tool.** Skip every artifact-publishing step and leave `artifacts.*` as `null` in the front-matter. The orchestrator posts `implementation-plan.md` to the issue as a comment after you finish.
+- **Commands come from issue comments.** The orchestrator starts a phase only when the user commented its command on the issue. A `/feature-implement` comment is Gate 1 approval: set `approved: true` in the plan's front-matter and commit it before implementing.
+- **Replanning.** When `/feature-plan` runs and your working directory already holds a plan for the issue, revise that plan in place on this branch. Don't create a new worktree or branch, and don't start over. The feedback is the text after "Feedback on the current plan" in the prompt, if any, plus the issue comments posted after the plan comment (the one starting with `<!-- agent:plan -->`). If the plan was already (partly) implemented, set every milestone the revision changes back to `status: todo` and `commit: null`, and say in its Files/Acceptance lines what the existing code on the branch must become, so `/feature-implement` reworks it instead of skipping it as done. Commit the revision. Your final message is posted on the issue as the reply to that feedback, so write it for the people discussing there: what changed and why, and answers to any questions they asked. Don't restate the plan.
+- **Keep an existing PR current.** If your branch already has a pull request (`gh pr view`), end every run that changed the branch by rewriting its title and body with `gh pr edit` to describe the branch as it is now, even when the run stopped early or isn't green. Mark anything you couldn't verify as unverified. A PR body describing code that's no longer there is worse than none.
+- **Your working directory** is the issue's feature worktree when an earlier phase created one, otherwise the default branch's worktree. Your branches are pushed after you finish.
+- **No Docker.** Anything that needs Docker can't be verified here; say so in the plan instead of treating it as a blocker.
