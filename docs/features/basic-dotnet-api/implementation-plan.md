@@ -8,7 +8,7 @@ language:   en
 approved:   true
 database:   null
 seeded:     false
-pr:         null
+pr:         4
 artifacts:
   plan:     null
   handover: null
