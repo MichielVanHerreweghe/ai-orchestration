@@ -2,11 +2,11 @@
 
 ## What changed
 
-**API** - `HelloApi/Program.cs:2` maps `GET /` to the plain text `hello`. No other endpoints, no controllers.
+**API** - `HelloApi/HelloEndpoint.cs` is a FastEndpoints endpoint (`GET /`, anonymous) returning the plain text `hello`; `Program.cs` registers FastEndpoints. No other endpoints, no controllers.
 
 **Container** - `HelloApi/Dockerfile` is multi-stage: SDK 10.0 runs `dotnet publish`, aspnet 10.0 runs `HelloApi.dll`. `EXPOSE 8080` (aspnet image default).
 
-**Project** - `HelloApi/HelloApi.csproj`: `Microsoft.NET.Sdk.Web`, `net10.0`. `HelloApi/.gitignore` ignores build output.
+**Project** - `HelloApi/HelloApi.csproj`: `Microsoft.NET.Sdk.Web`, `net10.0`, FastEndpoints 8.3.0. `HelloApi/.gitignore` ignores build output.
 
 **Frontend / database** - none.
 
@@ -32,7 +32,7 @@
 
 ## Deviations from the plan
 
-None recorded; the implementation matches the plan.
+None; `Send.StringAsync` exists in FastEndpoints 8.3.0 and net10.0 is supported.
 
 ## Not included
 
