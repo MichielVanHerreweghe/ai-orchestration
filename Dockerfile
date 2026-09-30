@@ -1,5 +1,9 @@
-FROM python:3-alpine
-WORKDIR /srv
-RUN echo ok > index.html
+FROM golang:alpine AS build
+WORKDIR /src
+COPY main.go .
+RUN CGO_ENABLED=0 go build -o /server main.go
+
+FROM scratch
+COPY --from=build /server /server
 EXPOSE 8000
-CMD ["python", "-m", "http.server", "8000"]
+CMD ["/server"]
