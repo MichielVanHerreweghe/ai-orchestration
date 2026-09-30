@@ -15,8 +15,8 @@ artifacts:
 milestones:
   - id: 1
     title: Dockerfile serving a test HTTP server
-    status: in_progress
-    commit: null
+    status: done
+    commit: 0216970
 ---
 
 # Implementation plan: Basic Dockerfile
@@ -60,3 +60,8 @@ Assumptions made (nobody to ask):
 
 ## Out of scope
 `.dockerignore`, compose, CI image builds, health checks, non-root user, real application code.
+
+## Deviations
+
+### Milestone 1 — verification
+Neither Go nor Docker is available in this container, so the build and the `curl` check were not run. The code is unverified beyond review.
