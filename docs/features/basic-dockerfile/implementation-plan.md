@@ -15,8 +15,8 @@ artifacts:
 milestones:
   - id: 1
     title: Dockerfile serving a test HTTP server
-    status: in_progress
-    commit: null
+    status: done
+    commit: aa179db
 ---
 
 # Implementation plan: Basic Dockerfile
