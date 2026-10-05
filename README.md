@@ -7,7 +7,7 @@ Every pull request labelled `preview` gets a preview: the app at its head commit
 - `orchestrator/` receives the webhook and is the Kubernetes operator: each command becomes an `AgentRun`, which the operator runs as a Job of the `agent/` image. Runs on the same issue go one at a time.
 - `deploy/` holds the manifests. `agentrun-crd.yaml` is generated from `V1AgentRun`:
   `cd orchestrator && dotnet tool restore && dotnet tool run kubeops -- generate operator --out <tmp> orchestrator src/Orchestrator.Infrastructure/Orchestrator.Infrastructure.csproj`, then copy the CRD from `<tmp>`.
-- `demo/` is a small app (API, SQL Server, Vite frontend) that previews this repository's own pull requests.
+- `demo/` is a small app (API, SQL Server, Angular frontend) that previews this repository's own pull requests.
 
 ## Previews
 
