@@ -1,10 +1,12 @@
 # Handover: Mark notes as done
 
-Not verified end to end: SQL Server and Docker were unavailable when this was built. Builds are green; the flows below have not been clicked through.
+Not verified end to end: no browser, SQL Server or Docker were available. `dotnet build demo/api` and `npm ci && npm run build` in `demo/web` are green; the flows below have not been clicked through, and the look is unverified visually.
 
 ## What changed
 - **API** (`demo/api/Program.cs`): `Note.IsDone` (default false). `GET /api/notes` returns open notes first, done notes last, each group newest first. New `PATCH /api/notes/{id}` with `{ "isDone": bool }` returns the note, or 404 for an unknown id.
-- **Frontend** (`demo/web/src/main.js`, `index.html`): each note has a checkbox; ticking or unticking PATCHes and reloads the list. Done notes are struck through (`<s>`). The heading reads `Notes (N open)`. Static heading text is `Notes (0 open)` until the first load.
+- **Frontend** (`demo/web`): the Vite/plain-JS page is replaced by an Angular 22 app, one standalone `App` component (`src/app/app.ts`), signals, `HttpClient`, no routing. Each note has a checkbox; ticking or unticking PATCHes and reloads the list (`app.ts:56-59`). Done notes are struck through (`<s>`). The heading reads `Notes (N open)`, computed from the list (`app.ts:37`), `0` until the first load.
+- **Look** (`demo/web/src/styles.css`): centred card, system fonts, indigo accent, muted done rows, dark mode following the OS, usable at 360px.
+- **Build**: `demo/web/Dockerfile` copies `dist/web/browser`; `README.md` says Angular. `nginx.conf`, `preview/` and CI unchanged.
 - **Database**: new `IsDone` column, created by `EnsureCreated`. No migrations.
 
 ## Test flows
@@ -44,7 +46,8 @@ Not verified end to end: SQL Server and Docker were unavailable when this was bu
 - No new config keys.
 
 ## Deviations from the plan
-None recorded; the diff matches the plan.
+- The plan was revised mid-way: the frontend was first plain JS with a modern stylesheet, then rebuilt in Angular (identical behaviour and look). The API is as first planned.
+- Milestone 2 already contained the `<label>` wrapper and `id="count"`, so milestone 3 was only the stylesheet move. Scaffolded `.editorconfig`, `.prettierrc`, `public/favicon.ico` were kept; `tsconfig.spec.json`, README and `.vscode` dropped.
 
 ## Not included
-Editing or deleting notes, bulk clear, filtering, keyboard accessibility beyond a native checkbox, EF migrations, automated tests, `preview/` and `deploy/` changes.
+Editing or deleting notes, bulk clear, filtering, theme toggle, keyboard accessibility beyond a native checkbox, Angular routing/SSR/Material, EF migrations, automated tests, `preview/` and `deploy/` changes.
