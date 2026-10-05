@@ -19,12 +19,12 @@ milestones:
     commit: 92357db
   - id: 2
     title: Rebuild the web page in Angular with checkbox, strike-through and open count
-    status: todo
-    commit: null
+    status: done
+    commit: 413bdd4
   - id: 3
     title: Port the modern look to the Angular app
-    status: todo
-    commit: null
+    status: done
+    commit: e11aaac
 ---
 
 # Implementation plan: Mark notes as done
@@ -106,3 +106,8 @@ Assumptions made without asking:
 ## Out of scope
 - Editing or deleting notes, bulk "clear done", filtering, animations, a theme toggle (dark follows the OS setting), keyboard accessibility beyond a native checkbox with a visible focus style.
 - Angular routing, SSR, Material, forms module, unit tests, a dev-server proxy config, EF migrations, other automated tests, changes to `preview/` or `deploy/`.
+
+## Deviations
+
+### Milestone 2 — template and styles
+The `<label>` wrapper and `id="count"` hook were written into the milestone 2 template already (the plan listed the wrapper under milestone 3), so milestone 3 is only the stylesheet move. Scaffolded files `.editorconfig`, `.prettierrc`, `public/favicon.ico` were kept; `tsconfig.spec.json`, README and `.vscode` were dropped. Not verified here: browser behaviour, `docker build`, and the API end to end (no browser, Docker or SQL Server).
