@@ -5,7 +5,7 @@ Not verified end to end: no browser, SQL Server or Docker were available. `dotne
 ## What changed
 - **API** (`demo/api/Program.cs`): `Note.IsDone` (default false). `GET /api/notes` returns open notes first, done notes last, each group newest first. New `PATCH /api/notes/{id}` with `{ "isDone": bool }` returns the note, or 404 for an unknown id.
 - **Frontend** (`demo/web`): the Vite/plain-JS page is replaced by an Angular 22 app, one standalone `App` component (`src/app/app.ts`), signals, `HttpClient`, no routing. Each note has a checkbox; ticking or unticking PATCHes and reloads the list (`app.ts:56-59`). Done notes are struck through (`<s>`). The heading reads `Notes (N open)`, computed from the list (`app.ts:37`), `0` until the first load.
-- **Look** (`demo/web/src/styles.css`): centred card, system fonts, indigo accent, muted done rows, dark mode following the OS, usable at 360px.
+- **Look** (`demo/web/src/styles.css`): My Little Pony theme: pastel pink/lavender/sky gradient background, frosted-glass card and rows, rainbow top stripe, gradient heading, sparkle in the card corner, pink pill for the open count, rounded font stack. Light only (no dark mode). Done rows use a darker purple plus strike-through. No official artwork, logos or fonts.
 - **Build**: `demo/web/Dockerfile` copies `dist/web/browser`; `README.md` says Angular. `nginx.conf`, `preview/` and CI unchanged.
 - **Database**: new `IsDone` column, created by `EnsureCreated`. No migrations.
 
@@ -40,14 +40,21 @@ Not verified end to end: no browser, SQL Server or Docker were available. `dotne
 - **Path**: 1. Add a note.
 - **Expected**: heading count goes up by one.
 
+### 6. Look
+- **Precondition**: flow 1 state, any modern browser; repeat at 360px width.
+- **Path**: 1. Open the page. 2. Hover a note row. 3. Tab to the checkbox and the Add button.
+- **Expected**: pastel gradient page, frosted card with rainbow stripe, readable heading and pink count pill, done note visibly muted but legible, row lifts on hover, visible focus outline, no horizontal scroll at 360px.
+- **Failure signal**: unreadable text, missing stripe/blur (a plain white card is the fallback when blur is unsupported), overflow.
+
 ## Technical notes
 - `PATCH /api/notes/{id}`, body `{ "isDone": true|false }`; 404 if the id is unknown.
 - No migrations. A local database created before this change lacks `IsDone`, so `GET /api/notes` returns 500. Drop the `Notes` database. Previews start fresh and are unaffected.
 - No new config keys.
 
 ## Deviations from the plan
-- The plan was revised mid-way: the frontend was first plain JS with a modern stylesheet, then rebuilt in Angular (identical behaviour and look). The API is as first planned.
+- The plan was revised mid-way: the frontend was first plain JS with a modern stylesheet, then rebuilt in Angular, then restyled twice (neon frosted glass, finally My Little Pony). Behaviour is unchanged. The API is as first planned.
+- Milestone 3 (look): done rows are dimmed with a darker muted colour plus strike-through rather than `opacity`, and the heading gradient uses deeper stops than the stripe, to keep contrast. Contrast was reasoned from the CSS, not measured.
 - Milestone 2 already contained the `<label>` wrapper and `id="count"`, so milestone 3 was only the stylesheet move. Scaffolded `.editorconfig`, `.prettierrc`, `public/favicon.ico` were kept; `tsconfig.spec.json`, README and `.vscode` dropped.
 
 ## Not included
-Editing or deleting notes, bulk clear, filtering, theme toggle, keyboard accessibility beyond a native checkbox, Angular routing/SSR/Material, EF migrations, automated tests, `preview/` and `deploy/` changes.
+Editing or deleting notes, bulk clear, filtering, theme toggle, dark mode, keyboard accessibility beyond a native checkbox, Angular routing/SSR/Material, EF migrations, automated tests, `preview/` and `deploy/` changes.
