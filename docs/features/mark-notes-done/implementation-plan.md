@@ -5,7 +5,7 @@ branch:     feat/mark-notes-done
 worktree:   /workspace/feat/mark-notes-done
 convention: docs/features/<slug>/
 language:   en
-approved:   true
+approved:   false
 database:   Notes
 seeded:     false
 pr:         6
@@ -22,9 +22,9 @@ milestones:
     status: done
     commit: 413bdd4
   - id: 3
-    title: Port the modern look to the Angular app
-    status: done
-    commit: e11aaac
+    title: Neon-futuristic frosted-glass look
+    status: todo
+    commit: null
 ---
 
 # Implementation plan: Mark notes as done
@@ -58,7 +58,14 @@ Follow the existing shape: minimal API endpoints in `Program.cs`, plain DOM code
   - `load()` GETs `/api/notes`; the form submit POSTs then `load()`; a checkbox `change` PATCHes `{ isDone }` then `load()`. Same refresh-by-reload pattern as today, so server ordering stays the only ordering.
   - Template: heading `Notes <span id="count">({{ open() }} open)</span>`, the form, and `@for (note of notes(); track note.id)` rendering `<li [class.done]="note.isDone"><label><input type="checkbox" [checked]="note.isDone" (change)="toggle(note, $event)"> @if (note.isDone) { <s>{{ note.text }}</s> } @else { <span>{{ note.text }}</span> }</label></li>`. Form uses a template reference variable, no `FormsModule`.
   - Build output moves to `dist/web/browser`; the Dockerfile's copy line and nothing else in it changes. `nginx.conf` is unchanged (`try_files $uri /index.html` already serves an Angular SPA, `/api/` still proxies). `preview/` and the CI matrix entry (`context: demo/web`) are unchanged.
-- **Look (kept, ported)**: the existing `style.css` is moved to `src/styles.css` (Angular's global stylesheet) with the same rules, so the look is identical: plain CSS, no new UI dependency, no web font, system font stack, indigo accent, dark variant, phone layout. Class names carry over into the Angular template.
+- **Look (revised: neon-futuristic, frosted glass)**: feedback on the plan asked for this look in place of the soft indigo card. Only `demo/web/src/styles.css` (and the `<head>` of `index.html`) change; the template keeps its markup and class names. Plain CSS, no UI dependency, no web font.
+  - **Backdrop**: one dark theme. `body` gets a near-black navy base with two or three blurred radial gradients (cyan, magenta, violet) so the glass has something to blur. `color-scheme: dark`. The `prefers-color-scheme` light/dark split is dropped (a neon look is dark by nature); the CSS variables stay, so the palette is still one block to change.
+  - **Frosted glass**: `main` and the note rows use a translucent white fill (`rgb(255 255 255 / .06-.08)`), `backdrop-filter: blur(16px) saturate(140%)` (with the `-webkit-` prefix), a 1px light border and rounded corners. An `@supports not (backdrop-filter: blur(1px))` rule raises the fill opacity so text stays readable where blur is unavailable.
+  - **Neon**: cyan primary and magenta secondary accent variables; the card border, count pill, Add button, focus ring and checked checkbox glow via `box-shadow` / `text-shadow` in those colours. Heading gets a subtle neon text-shadow. Pill and button text is dark on the bright neon fill.
+  - **Type**: system font stack stays; a slightly wider letter-spacing on the heading, no font download.
+  - **Done rows**: dimmed and struck through as before, with the glow turned off so open rows stand out.
+  - **Accessibility**: body text and muted text keep AA contrast against the *darkest-case blended* background; the focus ring is a solid neon outline, not glow alone.
+  - **Motion**: only a short `transition` on hover; wrapped in `@media (prefers-reduced-motion: no-preference)`.
 - **Storage**: the `IsDone` column comes from `EnsureCreated`, defaulting to false.
 
 ## Alternatives rejected
@@ -66,6 +73,8 @@ Follow the existing shape: minimal API endpoints in `Program.cs`, plain DOM code
 - **Optimistic UI update without reload**: more code for a demo whose `load()` is already the refresh path.
 - **Adding EF migrations**: a new tool and files for a demo that uses `EnsureCreated` and throwaway preview databases. See Risks.
 - **Keeping the Vite app and only adding Angular later / hybrid**: two frontends in one folder for one page. Replace it outright.
+- **A CSS framework / glassmorphism library or web font for the neon look**: a handful of CSS variables, gradients and `backdrop-filter` give it; no dependency.
+- **Keeping a light scheme alongside the neon one**: doubles the palette work for a look that only reads well dark. Dropped.
 - **Angular Material / a UI kit**: the existing CSS already gives the look; a kit is a large new dependency for one list.
 - **`FormsModule` / reactive forms**: one text input; a template reference variable is enough.
 - **Separate `/done` route with POST/DELETE**: PATCH with a body is one route and covers both directions.
@@ -82,30 +91,37 @@ Follow the existing shape: minimal API endpoints in `Program.cs`, plain DOM code
 - **Acceptance**: the Angular app does what the vanilla page did: checkbox per note, tick/untick PATCHes and refreshes, done notes struck through and last, heading `Notes (N open)` updating on add, tick, untick and after reload. `npm ci && npm run build` in `demo/web` is green and `dist/web/browser/index.html` exists. `docker build demo/web` is not runnable here (no Docker); the Dockerfile change is checked by reading that the copied path matches the build output. No `vite` dependency remains.
 - **Tests**: scaffold with `--skip-tests`; no automated tests, consistent with the earlier plan. Walk the three scenarios from the issue by hand where a browser is available.
 
-### 3. Port the modern look to the Angular app
-- **Files**: `demo/web/src/styles.css` (moved from `src/style.css`, registered in `angular.json`), `demo/web/src/app/app.ts` (class names, `<label>` wrapper in the template), `demo/web/src/index.html` (viewport meta, title)
-- **Acceptance**: same as the previous milestone 3: centred card, styled form and rows, muted struck-through done rows, count pill, AA contrast, visible focus states, light and dark schemes, usable at 360px. The heading's accessible text still reads `Notes (N open)`. `npm run build` is green. The old `src/style.css` is gone.
-- **Tests**: none automated. Screenshot light, dark and narrow if a browser is available; otherwise say the styling is unverified visually.
+### 3. Neon-futuristic frosted-glass look
+- **Status note**: milestone 3 was implemented earlier as the indigo card (`e11aaac`). The code on the branch must become the neon/frosted-glass look; rework `src/styles.css` rather than skipping it as done.
+- **Files**: `demo/web/src/styles.css` (rewritten), `demo/web/src/index.html` (add `<meta name="color-scheme" content="dark">` / `theme-color`). `app.ts` template stays unless a class hook is genuinely needed.
+- **Acceptance**: dark gradient backdrop with neon glows; `main` and note rows are visibly translucent frosted glass (`backdrop-filter` blur) with light borders; cyan/magenta neon accents on heading, count pill, Add button, focus ring and checked checkbox; done rows dimmed and struck through; `@supports not (backdrop-filter…)` fallback with a more opaque fill; AA text contrast; visible focus states; usable at 360px; reduced-motion respected. The heading's accessible text still reads `Notes (N open)`. No light scheme remains. `npm run build` is green.
+- **Tests**: none automated. Screenshot at desktop and 360px if a browser is available; otherwise say the look is unverified visually.
 
 ## Risks
 - **`EnsureCreated` won't add the column to an existing database.** A long-lived local database created before this change makes `GET /api/notes` fail with an invalid column error. Signal: 500 on the notes list after upgrading. Fix for local use: drop the `Notes` database. Previews are unaffected (fresh database each time).
 - **Cannot run SQL Server or Docker here**, so the end-to-end flow is unverified in this environment; the preview environment on the pull request is where it gets exercised.
 
 - **Angular needs a toolchain this repo has not run yet.** The Dockerfile uses `node:24-alpine`; the pinned Angular version must support Node 24, checked from the CLI's `engines` at scaffold time (bump the Dockerfile node tag only if it does not). Signal: `npm ci` or `npm run build` failing in the image build on the preview.
+- **`backdrop-filter` is unsupported or costly on old or low-end browsers.** Signal: panels look flat or text is hard to read over the gradient. Mitigation: the `@supports` fallback with a more opaque fill. Blur is applied to two surfaces only (card and rows) to keep paint cost down.
+- **Glow and translucency hurt contrast.** Signal: muted/done text under 4.5:1 over the brightest gradient spot. Mitigation: keep gradients dim behind the card and check the muted colour against the brightest blended background.
 - **Bigger bundle and slower image build** than the Vite page. Acceptable for a demo; it only affects preview build time.
 
 ## Open questions
 Assumptions made without asking:
 - Route shape is `PATCH /api/notes/{id}` with `{ "isDone": bool }`.
 - Within each group, notes stay newest first.
-- "Modern" is read as a clean card layout, system fonts, soft colours and dark-mode support; no brand colours were given, so an indigo accent is used and is one CSS variable to change.
+- "Neon-futuristic with frosted glass" is read as: dark gradient backdrop, translucent blurred panels, cyan and magenta glowing accents, system fonts. No exact palette was given, so cyan `#22d3ee`-ish and magenta `#e879f9`-ish are the starting point, each one CSS variable. The earlier "modern, soft indigo, light and dark" look is replaced, not kept as an option.
+- The look is dark only; the OS light setting no longer changes it.
 - "Build this in Angular" is read as: the `demo/web` frontend is rewritten in Angular with identical behaviour and look. The API (milestone 1) is untouched. If Angular was meant for something else (for example a new separate app), say so.
 - Latest stable Angular, standalone components and signals, no SSR, no routing.
 - No schema migration story is added (see Risks); dropping a stale local database is acceptable for this demo.
 
 ## Out of scope
-- Editing or deleting notes, bulk "clear done", filtering, animations, a theme toggle (dark follows the OS setting), keyboard accessibility beyond a native checkbox with a visible focus style.
+- Editing or deleting notes, bulk "clear done", filtering, animations, a theme toggle or light scheme, keyboard accessibility beyond a native checkbox with a visible focus style.
 - Angular routing, SSR, Material, forms module, unit tests, a dev-server proxy config, EF migrations, other automated tests, changes to `preview/` or `deploy/`.
+
+## Revision log
+- Feedback on the plan: "We want the application to look neon-futuristic with frosted glass". Milestone 3 reset to `todo`; the earlier indigo/light-dark styling is superseded. Milestones 1 and 2 untouched. Approval reset: re-approve with `/feature-implement`.
 
 ## Deviations
 
