@@ -23,8 +23,8 @@ milestones:
     commit: 413bdd4
   - id: 3
     title: My Little Pony look
-    status: todo
-    commit: null
+    status: done
+    commit: 3d47fac
 ---
 
 # Implementation plan: Mark notes as done
@@ -132,3 +132,6 @@ Assumptions made without asking:
 
 ### Milestone 2 — template and styles
 The `<label>` wrapper and `id="count"` hook were written into the milestone 2 template already (the plan listed the wrapper under milestone 3), so milestone 3 is only the stylesheet move. Scaffolded files `.editorconfig`, `.prettierrc`, `public/favicon.ico` were kept; `tsconfig.spec.json`, README and `.vscode` were dropped. Not verified here: browser behaviour, `docker build`, and the API end to end (no browser, Docker or SQL Server).
+
+### Milestone 3 — dimming and gradient text
+Done rows are dimmed by the darker-purple muted colour plus strike-through, not `opacity`, to keep AA contrast. The heading gradient uses deeper stops than the pastel stripe so the large text keeps 3:1. Not verified visually (no browser); build only.
